@@ -39,7 +39,8 @@
     <label for="location_name">Location Name:</label>
     <input type="text" id="location_name" name="location_name" required>
 
-    <button type="submit" name="add_location">Add Location</button>
+    <input type="hidden" name="add_location" value="<?php echo uniqid(); ?>">
+    <button type="submit">Add Location</button>
 </form>
 
 <!-- Display saved locations -->
@@ -64,19 +65,28 @@
                     <a href="?forecast=<?= $location['id'] ?>">Get Forecast</a>
                 </td>
             </tr>
+            <?php if (isset($selectedLocationId) && $selectedLocationId == $location['id'] && isset($forecast)): ?>
+                <tr>
+                    <td colspan="4">
+                        <h3>Weather Forecast for <?= htmlspecialchars($location['name']) ?></h3>
+                        <?php if (!empty($forecast)): ?>
+                            <p>Temperature:
+                                <?= isset($forecast['temperature']) ? htmlspecialchars($forecast['temperature']) : 'N/A' ?>
+                                <?= isset($forecast['temperatureUnit']) ? htmlspecialchars($forecast['temperatureUnit']) : '' ?>
+                            </p>
+                            <p>Forecast: <?= isset($forecast['shortForecast']) ? htmlspecialchars($forecast['shortForecast']) : 'N/A' ?></p>
+                            <p>Detailed Forecast: <?= isset($forecast['detailedForecast']) ? htmlspecialchars($forecast['detailedForecast']) : 'N/A' ?></p>
+                        <?php else: ?>
+                            <p>Weather forecast is currently unavailable for this location.</p>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endif; ?>
         <?php endforeach; ?>
         </tbody>
     </table>
 <?php else: ?>
     <p>No locations saved yet.</p>
-<?php endif; ?>
-
-<!-- Display weather forecast if available -->
-<?php if (isset($forecast) && !empty($forecast)): ?>
-    <h2>Weather Forecast</h2>
-    <p>Temperature: <?= htmlspecialchars($forecast['temperature']) ?> <?= htmlspecialchars($forecast['temperatureUnit']) ?></p>
-    <p>Forecast: <?= htmlspecialchars($forecast['shortForecast']) ?></p>
-    <p>Detailed Forecast: <?= htmlspecialchars($forecast['detailedForecast']) ?></p>
 <?php endif; ?>
 
 </body>

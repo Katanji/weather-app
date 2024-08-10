@@ -60,9 +60,9 @@ class Location extends Model
      * Get weather forecast for a location
      *
      * @param int $id Location ID
-     * @return array Weather forecast data
+     * @return array|null Weather forecast data
      */
-    public function getWeatherForecast(int $id): array
+    public function getWeatherForecast(int $id): ?array
     {
         // Fetch location coordinates from the database
         $stmt = $this->db->prepare("SELECT x_coord, y_coord FROM locations WHERE id = ?");

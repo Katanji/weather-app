@@ -18,25 +18,28 @@ class WeatherService
      *
      * @param float $x X coordinate (longitude)
      * @param float $y Y coordinate (latitude)
-     * @return array Forecast data
+     * @return array|null Forecast data
      * @throws Exception If API request fails
      */
-    public function getForecast(float $x, float $y): array
+    public function getForecast(float $x, float $y): ?array
     {
-        // First, get the forecast URL for the given coordinates
-        $pointsUrl = "{$this->baseUrl}/points/{$y},{$x}";
-        $pointsData = $this->makeRequest($pointsUrl);
+        try {
+            $pointsUrl = "{$this->baseUrl}/points/{$y},{$x}";
+            $pointsData = $this->makeRequest($pointsUrl);
 
-        if (!isset($pointsData['properties']['forecast'])) {
-            throw new Exception("Forecast URL not found in API response");
+            if (!isset($pointsData['properties']['forecast'])) {
+                error_log("Forecast URL not found in API response for coordinates: $x, $y");
+                return null;
+            }
+
+            $forecastUrl = $pointsData['properties']['forecast'];
+            $forecastData = $this->makeRequest($forecastUrl);
+
+            return $forecastData['properties']['periods'][0] ?? null;
+        } catch (Exception $e) {
+            error_log("Error in WeatherService: " . $e->getMessage());
+            return null;
         }
-
-        // Then, get the actual forecast data
-        $forecastUrl = $pointsData['properties']['forecast'];
-        $forecastData = $this->makeRequest($forecastUrl);
-
-        // Return the first period of the forecast (current conditions)
-        return $forecastData['properties']['periods'][0] ?? [];
     }
 
     /**

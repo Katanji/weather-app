@@ -58,8 +58,20 @@ class LocationController
      * @param int $id Location ID
      * @return array Weather forecast data
      */
-    public function getWeatherForecast(int $id): array
+    public function getWeatherForecast(int $id): ?array
     {
-        return $this->locationModel->getWeatherForecast($id);
+        try {
+            $forecast = $this->locationModel->getWeatherForecast($id);
+            if (empty($forecast)) {
+                // Log this incident
+                error_log("Empty forecast returned for location ID: $id");
+                return null;
+            }
+            return $forecast;
+        } catch (\Exception $e) {
+            // Log the error
+            error_log("Error getting weather forecast: " . $e->getMessage());
+            return null;
+        }
     }
 }

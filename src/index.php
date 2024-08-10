@@ -67,6 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_location'])) {
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['forecast'])) {
     $locationId = (int)$_GET['forecast'];
     $forecast = $locationController->getWeatherForecast($locationId);
+    $selectedLocationId = $locationId;
 }
 
 // Get all locations
