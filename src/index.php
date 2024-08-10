@@ -29,6 +29,7 @@ use App\Controllers\LocationController;
  * This script handles the routing and view rendering for the Weather App.
  */
 
+// @todo remove before push to github
 // Error reporting for debugging (remove in production)
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -46,6 +47,7 @@ $locationController = new LocationController($db);
 
 $message = '';
 $forecast = null;
+$selectedLocationId = null;
 
 // Handle form submission for adding a new location
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_location'])) {
