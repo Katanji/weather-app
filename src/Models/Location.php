@@ -61,6 +61,20 @@ class Location extends Model
     }
 
     /**
+     * Get a specific location by ID
+     *
+     * @param int $id Location ID
+     * @return array|null Location data or null if not found
+     */
+    public function getById(int $id): ?array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM locations WHERE id = ?");
+        $stmt->execute([$id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ?: null;
+    }
+
+    /**
      * Get weather forecast for a location
      *
      * @param int $id Location ID
@@ -68,22 +82,19 @@ class Location extends Model
      */
     public function getWeatherForecast(int $id): ?array
     {
-        // Fetch location coordinates from the database
-        $stmt = $this->db->prepare("SELECT x_coord, y_coord FROM locations WHERE id = ?");
-        $stmt->execute([$id]);
-        $location = $stmt->fetch(PDO::FETCH_ASSOC);
+        $location = $this->getById($id);
 
         if (!$location) {
-            return [];
+            return null;
         }
 
         try {
             // Get forecast from the weather service
             return $this->weatherService->getForecast($location['x_coord'], $location['y_coord']);
         } catch (\Exception $e) {
-            // Log the error and return an empty array
+            // Log the error and return null
             error_log("Weather forecast error: " . $e->getMessage());
-            return [];
+            return null;
         }
     }
 }

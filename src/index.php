@@ -47,7 +47,7 @@ $locationController = new LocationController($db);
 
 $message = '';
 $forecast = null;
-$selectedLocationId = null;
+$selectedLocation = null;
 
 // Handle form submission for adding a new location
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_location'])) {
@@ -68,8 +68,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_location'])) {
 // Handle weather forecast request
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['forecast'])) {
     $locationId = (int)$_GET['forecast'];
-    $forecast = $locationController->getWeatherForecast($locationId);
-    $selectedLocationId = $locationId;
+    $selectedLocation = $locationController->getLocationById($locationId);
+    if ($selectedLocation) {
+        $forecast = $locationController->getWeatherForecast($locationId);
+    } else {
+        $message = "Location not found.";
+    }
 }
 
 // Get all locations

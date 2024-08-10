@@ -15,8 +15,8 @@ use PDO;
  */
 class LocationController
 {
-    /** @var Location */
     private Location $locationModel;
+    private WeatherService $weatherService;
 
     /**
      * LocationController constructor
@@ -25,8 +25,8 @@ class LocationController
      */
     public function __construct(PDO $db)
     {
-        $weatherService = new WeatherService();
-        $this->locationModel = new Location($db, $weatherService);
+        $this->weatherService = new WeatherService();
+        $this->locationModel = new Location($db, $this->weatherService);
     }
 
     /**
@@ -56,10 +56,17 @@ class LocationController
      * Get weather forecast for a location
      *
      * @param int $id Location ID
-     * @return array Weather forecast data
+     * @return array|null Weather forecast data
      */
     public function getWeatherForecast(int $id): ?array
     {
+        // First, check if the location exists
+        $location = $this->locationModel->getById($id);
+        if (!$location) {
+            error_log("Location not found for ID: $id");
+            return null;
+        }
+
         try {
             $forecast = $this->locationModel->getWeatherForecast($id);
             if (empty($forecast)) {
@@ -73,5 +80,16 @@ class LocationController
             error_log("Error getting weather forecast: " . $e->getMessage());
             return null;
         }
+    }
+
+    /**
+     * Get a specific location by ID
+     *
+     * @param int $id Location ID
+     * @return array|null Location data
+     */
+    public function getLocationById(int $id): ?array
+    {
+        return $this->locationModel->getById($id);
     }
 }
