@@ -55,7 +55,7 @@ class WeatherService
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'User-Agent: WeatherApp/1.0 (your@email.com)'
+            'User-Agent: WeatherApp/1.0 (po6uh86@email.com)'
         ]);
 
         $response = curl_exec($ch);

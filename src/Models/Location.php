@@ -38,7 +38,11 @@ class Location extends Model
     {
         try {
             $stmt = $this->db->prepare("INSERT INTO locations (name, x_coord, y_coord) VALUES (?, ?, ?)");
-            $stmt->execute([$name, $x_coord, $y_coord]);
+            $stmt->execute([
+                $name,
+                number_format($x_coord, 4, '.', ''),
+                number_format($y_coord, 4, '.', '')
+            ]);
             return "Location added successfully!";
         } catch(PDOException $e) {
             return "Error adding location: " . $e->getMessage();

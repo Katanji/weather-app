@@ -59,8 +59,8 @@
         <?php foreach ($locations as $location): ?>
             <tr>
                 <td><?= htmlspecialchars($location['name']) ?></td>
-                <td><?= htmlspecialchars($location['x_coord']) ?></td>
-                <td><?= htmlspecialchars($location['y_coord']) ?></td>
+                <td><?= number_format($location['x_coord'], 4, '.', '') ?></td>
+                <td><?= number_format($location['y_coord'], 4, '.', '') ?></td>
                 <td>
                     <a href="?forecast=<?= $location['id'] ?>">Get Forecast</a>
                 </td>
