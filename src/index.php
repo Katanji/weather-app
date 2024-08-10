@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+session_start();
+
 require_once __DIR__ . '/vendor/autoload.php';
 require_once 'database.php';
 
@@ -43,18 +45,28 @@ try {
 $locationController = new LocationController($db);
 
 $message = '';
+$forecast = null;
 
 // Handle form submission for adding a new location
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST['location_name'] ?? '';
-    $x_coord = isset($_POST['x_coord']) ? (float)$_POST['x_coord'] : 0;
-    $y_coord = isset($_POST['y_coord']) ? (float)$_POST['y_coord'] : 0;
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_location'])) {
+    if (!isset($_SESSION['last_location_request']) || $_SESSION['last_location_request'] !== $_POST['add_location']) {
+        $name = $_POST['location_name'] ?? '';
+        $x_coord = isset($_POST['x_coord']) ? (float)$_POST['x_coord'] : 0;
+        $y_coord = isset($_POST['y_coord']) ? (float)$_POST['y_coord'] : 0;
 
-    if ($name && $x_coord && $y_coord) {
-        $message = $locationController->addLocation($name, $x_coord, $y_coord);
-    } else {
-        $message = "Please fill all fields.";
+        if ($name && $x_coord && $y_coord) {
+            $message = $locationController->addLocation($name, $x_coord, $y_coord);
+            $_SESSION['last_location_request'] = $_POST['add_location'];
+        } else {
+            $message = "Please fill all fields.";
+        }
     }
+}
+
+// Handle weather forecast request
+if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['forecast'])) {
+    $locationId = (int)$_GET['forecast'];
+    $forecast = $locationController->getWeatherForecast($locationId);
 }
 
 // Get all locations

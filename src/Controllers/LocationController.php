@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\Location;
+use App\Services\WeatherService;
 use PDO;
 
 /**
@@ -14,19 +15,18 @@ use PDO;
  */
 class LocationController
 {
-    /**
-     * @var Location The Location model instance
-     */
+    /** @var Location */
     private Location $locationModel;
 
     /**
      * LocationController constructor
      *
-     * @param PDO $db The database connection
+     * @param PDO $db Database connection
      */
     public function __construct(PDO $db)
     {
-        $this->locationModel = new Location($db);
+        $weatherService = new WeatherService();
+        $this->locationModel = new Location($db, $weatherService);
     }
 
     /**
@@ -50,5 +50,16 @@ class LocationController
     public function getAllLocations(): array
     {
         return $this->locationModel->getAll();
+    }
+
+    /**
+     * Get weather forecast for a location
+     *
+     * @param int $id Location ID
+     * @return array Weather forecast data
+     */
+    public function getWeatherForecast(int $id): array
+    {
+        return $this->locationModel->getWeatherForecast($id);
     }
 }
