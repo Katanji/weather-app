@@ -51,17 +51,14 @@ $selectedLocation = null;
 
 // Handle form submission for adding a new location
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_location'])) {
-    if (!isset($_SESSION['last_location_request']) || $_SESSION['last_location_request'] !== $_POST['add_location']) {
-        $name = $_POST['location_name'] ?? '';
-        $x_coord = isset($_POST['x_coord']) ? (float)$_POST['x_coord'] : 0;
-        $y_coord = isset($_POST['y_coord']) ? (float)$_POST['y_coord'] : 0;
+    $name = $_POST['location_name'] ?? '';
+    $x_coord = isset($_POST['x_coord']) ? (float)$_POST['x_coord'] : 0;
+    $y_coord = isset($_POST['y_coord']) ? (float)$_POST['y_coord'] : 0;
 
-        if ($name && $x_coord && $y_coord) {
-            $message = $locationController->addLocation($name, $x_coord, $y_coord);
-            $_SESSION['last_location_request'] = $_POST['add_location'];
-        } else {
-            $message = "Please fill all fields.";
-        }
+    if ($name && $x_coord && $y_coord) {
+        $message = $locationController->addLocation($name, $x_coord, $y_coord);
+    } else {
+        $message = "Please fill all fields.";
     }
 }
 
