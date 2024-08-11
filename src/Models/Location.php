@@ -3,28 +3,22 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Services\WeatherService;
-use Exception;
 use PDO;
 use PDOException;
 
 /**
- * Location model for managing location data and weather forecasts
+ * Location model for managing location data
  */
 class Location extends Model
 {
-    private WeatherService $weatherService;
-
     /**
      * Location constructor
      *
      * @param PDO $db Database connection
-     * @param WeatherService $weatherService Weather service for forecasts
      */
-    public function __construct(PDO $db, WeatherService $weatherService)
+    public function __construct(PDO $db)
     {
         parent::__construct($db);
-        $this->weatherService = $weatherService;
     }
 
     /**
@@ -90,30 +84,5 @@ class Location extends Model
         $stmt->execute([$id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ?: null;
-    }
-
-    /**
-     * Get weather forecast for a location
-     *
-     * @param int $id Location ID
-     * @return array|null Weather forecast data
-     */
-    public function getWeatherForecast(int $id): ?array
-    {
-        $location = $this->getById($id);
-
-        if (!$location) {
-            error_log("Location not found for ID: $id");
-            return null;
-        }
-
-        try {
-            // Get forecast from the weather service
-            return $this->weatherService->getForecast((float)$location['x_coord'], (float)$location['y_coord']);
-        } catch (Exception $e) {
-            // Log the error and return null
-            error_log("Weather forecast error for location {$location['name']}: " . $e->getMessage());
-            return null;
-        }
     }
 }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\Location;
 use Exception;
 
 /**
@@ -16,22 +17,46 @@ class WeatherService
     /** @var HttpClient */
     private HttpClient $httpClient;
 
+    /** @var Location */
+    private Location $locationModel;
+
     /**
      * WeatherService constructor
+     *
+     * @param Location $locationModel
      */
-    public function __construct()
+    public function __construct(Location $locationModel)
     {
         $this->httpClient = new HttpClient();
+        $this->locationModel = $locationModel;
     }
 
     /**
-     * Get weather forecast for a specific location
+     * Get weather forecast for a location by ID
+     *
+     * @param int $locationId Location ID
+     * @return array|null Weather forecast data
+     */
+    public function getWeatherForecastByLocationId(int $locationId): ?array
+    {
+        $location = $this->locationModel->getById($locationId);
+
+        if (!$location) {
+            error_log("Location not found for ID: $locationId");
+            return null;
+        }
+
+        return $this->getForecast((float)$location['x_coord'], (float)$location['y_coord']);
+    }
+
+    /**
+     * Get weather forecast for specific coordinates
      *
      * @param float $x X coordinate (longitude)
      * @param float $y Y coordinate (latitude)
      * @return array|null Forecast data
      */
-    public function getForecast(float $x, float $y): ?array
+    private function getForecast(float $x, float $y): ?array
     {
         // Ensure coordinates are floats and rounded to 4 decimal places (api requires a maximum of 4 digits after the dot)
         $x = round($x, 4);

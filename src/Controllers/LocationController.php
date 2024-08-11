@@ -25,8 +25,8 @@ class LocationController
      */
     public function __construct(PDO $db)
     {
-        $this->weatherService = new WeatherService();
-        $this->locationModel = new Location($db, $this->weatherService);
+        $this->locationModel = new Location($db);
+        $this->weatherService = new WeatherService($this->locationModel);
     }
 
     /**
@@ -66,7 +66,7 @@ class LocationController
      */
     public function getWeatherForecast(int $id): array
     {
-        $forecast = $this->locationModel->getWeatherForecast($id);
+        $forecast = $this->weatherService->getWeatherForecastByLocationId($id);
         $error = null;
 
         if ($forecast === null) {
