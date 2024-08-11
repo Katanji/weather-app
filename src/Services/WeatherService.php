@@ -35,7 +35,7 @@ class WeatherService
             $forecastUrl = $pointsData['properties']['forecast'];
             $forecastData = $this->makeRequest($forecastUrl);
 
-            return $forecastData['properties']['periods'][0] ?? null;
+            return $forecastData['properties']['periods'] ?? null;
         } catch (Exception $e) {
             error_log("Error in WeatherService: " . $e->getMessage());
             return null;
