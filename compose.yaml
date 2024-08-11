@@ -66,7 +66,7 @@ services:
     develop:
       watch:
         - action: sync
-          path: ./src
+          path: .
           target: /var/www/html
     command: >
       bash -c "php /var/www/html/init_db.php && apache2-foreground"

@@ -5,8 +5,8 @@ session_start();
 
 require_once __DIR__ . '/bootstrap.php';
 
-use Config\Database;
 use App\Controllers\LocationController;
+use Config\Database;
 
 /**
  * Main entry point of the application

@@ -68,15 +68,17 @@ FROM php:8.3.2-apache as final
 
 RUN docker-php-ext-install pdo pdo_mysql
 
-# Use the default production configuration for PHP runtime arguments, see
-# https://github.com/docker-library/docs/tree/master/php#configuration
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+# Configure Apache to use the src directory
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/src|' /etc/apache2/sites-available/000-default.conf \
+    && sed -i 's|<Directory /var/www/>|<Directory /var/www/html/src/>|' /etc/apache2/apache2.conf
 
 # Copy the app dependencies from the previous install stage.
 COPY --from=deps app/vendor/ /var/www/html/vendor
 # Copy the app files from the app directory.
-COPY ./src /var/www/html
+COPY . /var/www/html
 
-# Switch to a non-privileged user (defined in the base image) that the app will run under.
-# See https://docs.docker.com/go/dockerfile-user-best-practices/
+# Change ownership of the application files
+RUN chown -R www-data:www-data /var/www/html
+
+# Switch to a non-privileged user
 USER www-data
