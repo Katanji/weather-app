@@ -1,7 +1,9 @@
 <?php
 declare(strict_types=1);
 
-require_once 'database.php';
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Config\Database;
 
 /**
  * Initializes the database by creating necessary tables
@@ -10,7 +12,7 @@ require_once 'database.php';
  */
 function initializeDatabase(): void
 {
-    $db_handle = getDatabaseConnection();
+    $db_handle = Database::getInstance();
 
     // Create the 'locations' table if it doesn't exist
     $db_handle->exec("CREATE TABLE IF NOT EXISTS locations (

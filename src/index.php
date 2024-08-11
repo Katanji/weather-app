@@ -5,6 +5,7 @@ session_start();
 
 require_once __DIR__ . '/bootstrap.php';
 
+use Config\Database;
 use App\Controllers\LocationController;
 
 /**
@@ -21,7 +22,7 @@ error_reporting(E_ALL);
 
 // Initialize database connection
 try {
-    $db = getDatabaseConnection();
+    $db = Database::getInstance();
 } catch (PDOException $e) {
     die("Database connection failed: " . $e->getMessage());
 }
