@@ -13,6 +13,17 @@ class WeatherService
     /** @var string Base URL for the NWS API */
     private string $baseUrl = 'https://api.weather.gov';
 
+    /** @var HttpClient */
+    private HttpClient $httpClient;
+
+    /**
+     * WeatherService constructor
+     */
+    public function __construct()
+    {
+        $this->httpClient = new HttpClient();
+    }
+
     /**
      * Get weather forecast for a specific location
      *
@@ -29,7 +40,7 @@ class WeatherService
         try {
             $pointsUrl = "{$this->baseUrl}/points/{$y},{$x}";
             error_log("Requesting points data from: $pointsUrl");
-            $pointsData = $this->makeRequest($pointsUrl);
+            $pointsData = $this->httpClient->makeRequest($pointsUrl);
 
             if (!isset($pointsData['properties']['forecast'])) {
                 error_log("Forecast URL not found in API response for coordinates: $x, $y");
@@ -39,7 +50,7 @@ class WeatherService
 
             $forecastUrl = $pointsData['properties']['forecast'];
             error_log("Requesting forecast data from: $forecastUrl");
-            $forecastData = $this->makeRequest($forecastUrl);
+            $forecastData = $this->httpClient->makeRequest($forecastUrl);
 
             if (!isset($forecastData['properties']['periods'])) {
                 error_log("Periods data not found in forecast response");
@@ -52,42 +63,5 @@ class WeatherService
             error_log("Error in WeatherService: " . $e->getMessage());
             return null;
         }
-    }
-
-    /**
-     * Make a GET request to the API
-     *
-     * @param string $url API endpoint URL
-     * @return array Response data
-     * @throws Exception If request fails
-     */
-    private function makeRequest(string $url): array
-    {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'User-Agent: WeatherApp/1.0 (po6uh86@email.com)'
-        ]);
-
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
-        curl_close($ch);
-
-        if ($error) {
-            throw new Exception("cURL Error: $error");
-        }
-
-        if ($httpCode !== 200) {
-            throw new Exception("API request failed with HTTP code $httpCode. Response: $response");
-        }
-
-        $data = json_decode($response, true);
-        if (!$data) {
-            throw new Exception("Failed to decode JSON response: $response");
-        }
-
-        return $data;
     }
 }
