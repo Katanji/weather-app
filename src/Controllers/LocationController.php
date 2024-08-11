@@ -30,16 +30,21 @@ class LocationController
     }
 
     /**
-     * Add a new location
+     * Handle adding a new location
      *
-     * @param string $name The name of the location
-     * @param float $x_coord The X coordinate of the location
-     * @param float $y_coord The Y coordinate of the location
+     * @param array $data POST data containing location information
      * @return string Success or error message
      */
-    public function addLocation(string $name, float $x_coord, float $y_coord): string
+    public function addLocation(array $data): string
     {
-        return $this->locationModel->add($name, $x_coord, $y_coord);
+        $name = $data['location_name'] ?? '';
+        $x_coord = isset($data['x_coord']) ? (float)$data['x_coord'] : 0;
+        $y_coord = isset($data['y_coord']) ? (float)$data['y_coord'] : 0;
+
+        if ($name && $x_coord && $y_coord) {
+            return $this->locationModel->add($name, $x_coord, $y_coord);
+        }
+        return "Please fill all fields.";
     }
 
     /**

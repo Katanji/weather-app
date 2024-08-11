@@ -3,23 +3,7 @@ declare(strict_types=1);
 
 session_start();
 
-require_once __DIR__ . '/vendor/autoload.php';
-require_once 'database.php';
-
-// Custom autoloader for App namespace
-spl_autoload_register(function ($class) {
-    $prefix = 'App\\';
-    $base_dir = __DIR__ . '/';
-    $len = strlen($prefix);
-    if (strncmp($prefix, $class, $len) !== 0) {
-        return;
-    }
-    $relative_class = substr($class, $len);
-    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
-    if (file_exists($file)) {
-        require $file;
-    }
-});
+require_once __DIR__ . '/bootstrap.php';
 
 use App\Controllers\LocationController;
 
@@ -48,33 +32,34 @@ $locationController = new LocationController($db);
 $message = '';
 $forecast = null;
 $selectedLocation = null;
-
-// Handle form submission for adding a new location
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_location'])) {
-    $name = $_POST['location_name'] ?? '';
-    $x_coord = isset($_POST['x_coord']) ? (float)$_POST['x_coord'] : 0;
-    $y_coord = isset($_POST['y_coord']) ? (float)$_POST['y_coord'] : 0;
-
-    if ($name && $x_coord && $y_coord) {
-        $message = $locationController->addLocation($name, $x_coord, $y_coord);
-    } else {
-        $message = "Please fill all fields.";
-    }
-}
-
-// Handle weather forecast request
-if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['forecast'])) {
-    $locationId = (int)$_GET['forecast'];
-    $selectedLocation = $locationController->getLocationById($locationId);
-    if ($selectedLocation) {
-        $forecast = $locationController->getWeatherForecast($locationId);
-    } else {
-        $message = "Location not found.";
-    }
-}
-
-// Get all locations
 $locations = $locationController->getAllLocations();
+
+// Simple routing
+$action = $_GET['action'] ?? 'home';
+
+switch ($action) {
+    case 'addLocation':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $message = $locationController->addLocation($_POST);
+            // Redirect to prevent form resubmission
+            header('Location: index.php');
+            exit;
+        }
+        break;
+
+    case 'getForecast':
+        if (isset($_GET['id'])) {
+            $forecastId = (int)$_GET['id'];
+            $forecast = $locationController->getWeatherForecast($forecastId);
+            $selectedLocation = $locationController->getLocationById($forecastId);
+        }
+        break;
+
+    case 'home':
+    default:
+        // No action needed for home page
+        break;
+}
 
 // Include the view
 include 'Views/index.view.php';

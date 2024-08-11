@@ -17,7 +17,7 @@
                     <td><?= number_format($location['x_coord'] ?? 0, 4, '.', '') ?></td>
                     <td><?= number_format($location['y_coord'] ?? 0, 4, '.', '') ?></td>
                     <td>
-                        <a href="index.php?forecast=<?= $location['id'] ?? '' ?>">Get Forecast</a>
+                        <a href="index.php?action=getForecast&id=<?= $location['id'] ?? '' ?>">Get Forecast</a>
                     </td>
                 </tr>
             <?php endforeach; ?>
