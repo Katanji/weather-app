@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Services\WeatherService;
+use Exception;
 use PDO;
 use PDOException;
 
@@ -37,15 +38,32 @@ class Location extends Model
     public function add(string $name, float $x_coord, float $y_coord): string
     {
         try {
+            // Validate input
+            if (strlen($name) > 255) {
+                return "Error: Location name is too long (max 255 characters)";
+            }
+
+            // Check if the coordinates are within the DECIMAL(9,6) range
+            if ($x_coord < -999.999999 || $x_coord > 999.999999 ||
+                $y_coord < -999.999999 || $y_coord > 999.999999) {
+                return "Error: Coordinates are out of range (must be between -999.999999 and 999.999999)";
+            }
+
+            // Format coordinates to 6 decimal places
+            $formatted_x = number_format($x_coord, 6, '.', '');
+            $formatted_y = number_format($y_coord, 6, '.', '');
+
             $stmt = $this->db->prepare("INSERT INTO locations (name, x_coord, y_coord) VALUES (?, ?, ?)");
             $stmt->execute([
                 $name,
-                number_format($x_coord, 4, '.', ''),
-                number_format($y_coord, 4, '.', '')
+                $formatted_x,
+                $formatted_y
             ]);
             return "Location added successfully!";
-        } catch(PDOException $e) {
-            return "Error adding location: " . $e->getMessage();
+        } catch (PDOException $e) {
+            // Log the full error for debugging
+            error_log("Database error in add location: " . $e->getMessage());
+            return "Error adding location. Please try again or contact support if the problem persists.";
         }
     }
 
@@ -85,15 +103,16 @@ class Location extends Model
         $location = $this->getById($id);
 
         if (!$location) {
+            error_log("Location not found for ID: $id");
             return null;
         }
 
         try {
             // Get forecast from the weather service
-            return $this->weatherService->getForecast($location['x_coord'], $location['y_coord']);
-        } catch (\Exception $e) {
+            return $this->weatherService->getForecast((float)$location['x_coord'], (float)$location['y_coord']);
+        } catch (Exception $e) {
             // Log the error and return null
-            error_log("Weather forecast error: " . $e->getMessage());
+            error_log("Weather forecast error for location {$location['name']}: " . $e->getMessage());
             return null;
         }
     }

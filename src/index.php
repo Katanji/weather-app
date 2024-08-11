@@ -41,8 +41,12 @@ switch ($action) {
     case 'addLocation':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $message = $locationController->addLocation($_POST);
-            // Redirect to prevent form resubmission
-            header('Location: index.php');
+            if (str_starts_with($message, 'Error')) {
+                // If there's an error, don't redirect
+                break;
+            }
+            // Redirect to prevent form resubmission on success
+            header('Location: index.php?message=' . urlencode($message));
             exit;
         }
         break;
@@ -50,14 +54,21 @@ switch ($action) {
     case 'getForecast':
         if (isset($_GET['id'])) {
             $forecastId = (int)$_GET['id'];
-            $forecast = $locationController->getWeatherForecast($forecastId);
+            $result = $locationController->getWeatherForecast($forecastId);
+            $forecast = $result['forecast'];
             $selectedLocation = $locationController->getLocationById($forecastId);
+            if ($result['error']) {
+                $message = $result['error'];
+            }
         }
         break;
 
     case 'home':
     default:
-        // No action needed for home page
+        // Check for message from redirect
+        if (isset($_GET['message'])) {
+            $message = $_GET['message'];
+        }
         break;
 }
 

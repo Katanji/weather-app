@@ -19,23 +19,35 @@ class WeatherService
      * @param float $x X coordinate (longitude)
      * @param float $y Y coordinate (latitude)
      * @return array|null Forecast data
-     * @throws Exception If API request fails
      */
     public function getForecast(float $x, float $y): ?array
     {
+        // Ensure coordinates are floats and rounded to 4 decimal places (api requires a maximum of 4 digits after the dot)
+        $x = round($x, 4);
+        $y = round($y, 4);
+
         try {
             $pointsUrl = "{$this->baseUrl}/points/{$y},{$x}";
+            error_log("Requesting points data from: $pointsUrl");
             $pointsData = $this->makeRequest($pointsUrl);
 
             if (!isset($pointsData['properties']['forecast'])) {
                 error_log("Forecast URL not found in API response for coordinates: $x, $y");
+                error_log("Points API response: " . json_encode($pointsData));
                 return null;
             }
 
             $forecastUrl = $pointsData['properties']['forecast'];
+            error_log("Requesting forecast data from: $forecastUrl");
             $forecastData = $this->makeRequest($forecastUrl);
 
-            return $forecastData['properties']['periods'] ?? null;
+            if (!isset($forecastData['properties']['periods'])) {
+                error_log("Periods data not found in forecast response");
+                error_log("Forecast API response: " . json_encode($forecastData));
+                return null;
+            }
+
+            return $forecastData['properties']['periods'];
         } catch (Exception $e) {
             error_log("Error in WeatherService: " . $e->getMessage());
             return null;
@@ -59,6 +71,7 @@ class WeatherService
         ]);
 
         $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $error = curl_error($ch);
         curl_close($ch);
 
@@ -66,9 +79,13 @@ class WeatherService
             throw new Exception("cURL Error: $error");
         }
 
+        if ($httpCode !== 200) {
+            throw new Exception("API request failed with HTTP code $httpCode. Response: $response");
+        }
+
         $data = json_decode($response, true);
         if (!$data) {
-            throw new Exception("Failed to decode JSON response");
+            throw new Exception("Failed to decode JSON response: $response");
         }
 
         return $data;

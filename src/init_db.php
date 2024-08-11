@@ -16,8 +16,8 @@ function initializeDatabase(): void
     $db_handle->exec("CREATE TABLE IF NOT EXISTS locations (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
-        x_coord FLOAT NOT NULL,
-        y_coord FLOAT NOT NULL
+        x_coord DECIMAL(9,6) NOT NULL,
+        y_coord DECIMAL(9,6) NOT NULL
     )");
 
     echo "Database initialized successfully.\n";

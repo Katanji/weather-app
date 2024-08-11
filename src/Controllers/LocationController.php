@@ -30,21 +30,22 @@ class LocationController
     }
 
     /**
-     * Handle adding a new location
+     * Add a new location
      *
-     * @param array $data POST data containing location information
+     * @param array $postData POST data containing location details
      * @return string Success or error message
      */
-    public function addLocation(array $data): string
+    public function addLocation(array $postData): string
     {
-        $name = $data['location_name'] ?? '';
-        $x_coord = isset($data['x_coord']) ? (float)$data['x_coord'] : 0;
-        $y_coord = isset($data['y_coord']) ? (float)$data['y_coord'] : 0;
+        $name = trim($postData['location_name'] ?? '');
+        $x_coord = filter_var($postData['x_coord'] ?? '', FILTER_VALIDATE_FLOAT);
+        $y_coord = filter_var($postData['y_coord'] ?? '', FILTER_VALIDATE_FLOAT);
 
-        if ($name && $x_coord && $y_coord) {
-            return $this->locationModel->add($name, $x_coord, $y_coord);
+        if (empty($name) || $x_coord === false || $y_coord === false) {
+            return "Error: Invalid input. Please check your data and try again.";
         }
-        return "Please fill all fields.";
+
+        return $this->locationModel->add($name, $x_coord, $y_coord);
     }
 
     /**
@@ -61,30 +62,22 @@ class LocationController
      * Get weather forecast for a location
      *
      * @param int $id Location ID
-     * @return array|null Weather forecast data
+     * @return array An array containing forecast data and any error messages
      */
-    public function getWeatherForecast(int $id): ?array
+    public function getWeatherForecast(int $id): array
     {
-        // First, check if the location exists
-        $location = $this->locationModel->getById($id);
-        if (!$location) {
-            error_log("Location not found for ID: $id");
-            return null;
+        $forecast = $this->locationModel->getWeatherForecast($id);
+        $error = null;
+
+        if ($forecast === null) {
+            error_log("Failed to retrieve forecast for location ID: $id");
+            $error = "Unable to retrieve forecast. Please check the error logs for more details.";
         }
 
-        try {
-            $forecast = $this->locationModel->getWeatherForecast($id);
-            if (empty($forecast)) {
-                // Log this incident
-                error_log("Empty forecast returned for location ID: $id");
-                return null;
-            }
-            return $forecast;
-        } catch (\Exception $e) {
-            // Log the error
-            error_log("Error getting weather forecast: " . $e->getMessage());
-            return null;
-        }
+        return [
+            'forecast' => $forecast,
+            'error' => $error
+        ];
     }
 
     /**
