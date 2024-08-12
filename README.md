@@ -1,11 +1,3 @@
-# PHP Coding Exercise for VT Electronic Research Administration (ERA) Web Application Developer position
-
-This project serves as a template for a LAMP stack Web Application from which
-Web Developer candidates can start.
-
-This project template was created by following part of this tutorial:
-[Docker's PHP Language Guide](https://docs.docker.com/language/php/).
-
 ### Getting started
 
 To get started in development, make sure
@@ -83,37 +75,11 @@ configured such that you can use the [curl related functions](https://www.php.ne
 Otherwise, you could install your favorite http client (see below "Installing
 additional libraries" section).
 
-**Note, according to the [API Web Service overview](https://www.weather.gov/documentation/services-web-api):**
-> A User Agent is required to identify your application. This string can be anything, ... (the more unique the better)
-
-**Therefore, make sure to set the `User-Agent` header in your request, otherwise 
-you will get 403 responses.** E.g. `'User-Agent: era-php-coding-exercise`.
-
-If you run out of time integrating the NWS API, or if the API is down for 
-whatever reason (e.g. getting 502 responses), feel free to use the json data
-provided in the [data](./data) directory as mock data for your application. 
-The [blacksburg_va_weather_example.json](data%2Fblacksburg_va_weather_example.json)
-contains example forecast data for Blacksburg, VA, which was retrieved from 
-the following endpoint: https://api.weather.gov/gridpoints/RNK/58,65/forecast.
-
 The `forecast` endpoint responds with a JSON object. At the top level of the 
 returned JSON object, you can get the 'properties' object. From the 
 'properties' object, get the array of 'periods'. The first element in the 
 periods array (at index 0) is an object describing the current period. In the
 current period, the text of the forecast can be found as 'detailedForecast'.
-
-### Installing additional libraries
-
-This is not required, but if you wish to install additional libraries for use 
-in your PHP project, consider installing them via `apt-get` inside the 
-[Dockerfile](Dockerfile). There are some example there. Make sure to rebuild
-your docker image by stopping or removing the stack (see below) and starting
-it again via `docker compose up --build`.
-
-Alternatively, you may be able to use `composer` for dependency management. 
-There's a [composer.json](./composer.json) in the project that gets mounted 
-into the [Dockerfile](./Dockerfile) and used for install when building the 
-image.
 
 ### Tear down
 
