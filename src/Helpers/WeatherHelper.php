@@ -19,11 +19,11 @@ class WeatherHelper
 
         if (str_contains($forecast, 'clear') || str_contains($forecast, 'sunny')) {
             return $isDaytime
-                ? '<i class="fas fa-sun" style="color: #f1c40f;"></i>'
+                ? '<i class="fas fa-sun" style="color: #f39c12;"></i>'
                 : '<i class="fas fa-moon" style="color: #f39c12;"></i>';
         } elseif (str_contains($forecast, 'cloud')) {
             return $isDaytime
-                ? '<i class="fas fa-cloud-sun" style="color: #f1c40f;"></i>'
+                ? '<i class="fas fa-cloud-sun" style="color: #f39c12;"></i>'
                 : '<i class="fas fa-cloud-moon" style="color: #34495e;"></i>';
         } elseif (str_contains($forecast, 'rain')) {
             return $isDaytime

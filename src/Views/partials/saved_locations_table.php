@@ -1,5 +1,5 @@
 <div class="saved-locations">
-    <h2>Saved Locations</h2>
+    <h3>Saved Locations</h3>
     <?php if (!empty($locations)): ?>
         <table>
             <thead>
@@ -24,6 +24,6 @@
             </tbody>
         </table>
     <?php else: ?>
-        <p>No locations saved yet.</p>
+        <p class="no-saved">No locations saved yet.</p>
     <?php endif; ?>
 </div>

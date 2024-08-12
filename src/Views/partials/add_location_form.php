@@ -1,5 +1,5 @@
 <div class="form-group">
-    <h2>Add New Location</h2>
+    <h3>Add New Location</h3>
     <form action="index.php?action=addLocation" method="post">
         <label for="x_coord">X Coordinate:</label>
         <input type="number" step="any" id="x_coord" name="x_coord" min="-999.999999" max="999.999999" required>

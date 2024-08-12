@@ -19,8 +19,8 @@ if (count($forecast) > 1): ?>
 
                 $nightForecast = $forecast[$index + 1] ?? null;
                 $precipitationValue = $dayForecast['probabilityOfPrecipitation']['value'] ?? 0;
-                $precipitationColor = $precipitationValue > 0 ? 'blue' : 'gray';
-                ?>
+                $precipitationColor = $precipitationValue > 0 ? '#3498db' : '#808080';
+        ?>
                 <div class="day-forecast">
                     <div class="day-name">
                         <?= $dayNames[$date->format('w')] ?> <?= $date->format('n/j') ?>
