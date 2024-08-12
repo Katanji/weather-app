@@ -14,12 +14,6 @@ use Config\Database;
  * This script handles the routing and view rendering for the Weather App.
  */
 
-// @todo remove before push to github
-// Error reporting for debugging (remove in production)
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 // Initialize database connection
 try {
     $db = Database::getInstance();
@@ -74,4 +68,4 @@ switch ($action) {
 }
 
 // Include the view
-include __DIR__ . '/../src/Views/index.view.php';
+include __DIR__ . '/../views/index.view.php';
