@@ -6,7 +6,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 // Custom autoloader for App namespace
 spl_autoload_register(function (string $class): void {
     $prefix = 'App\\';
-    $base_dir = __DIR__ . '/src/';
+    $base_dir = __DIR__ . '/app/';
     $len = strlen($prefix);
     if (strncmp($prefix, $class, $len) !== 0) {
         return;
