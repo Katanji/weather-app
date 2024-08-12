@@ -69,8 +69,8 @@ FROM php:8.3.2-apache as final
 RUN docker-php-ext-install pdo pdo_mysql
 
 # Configure Apache to use the src directory
-RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/src|' /etc/apache2/sites-available/000-default.conf \
-    && sed -i 's|<Directory /var/www/>|<Directory /var/www/html/src/>|' /etc/apache2/apache2.conf
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|' /etc/apache2/sites-available/000-default.conf \
+    && sed -i 's|<Directory /var/www/>|<Directory /var/www/html/public/>|' /etc/apache2/apache2.conf
 
 # Copy the app dependencies from the previous install stage.
 COPY --from=deps app/vendor/ /var/www/html/vendor

@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 session_start();
 
-require_once __DIR__ . '/bootstrap.php';
+require_once __DIR__ . '/../bootstrap.php';
+
 
 use App\Controllers\LocationController;
 use Config\Database;
@@ -74,4 +75,4 @@ switch ($action) {
 }
 
 // Include the view
-include 'Views/index.view.php';
+include __DIR__ . '/../src/Views/index.view.php';

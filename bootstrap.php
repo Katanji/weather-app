@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 // Custom autoloader for App namespace
 spl_autoload_register(function (string $class): void {
     $prefix = 'App\\';
-    $base_dir = __DIR__ . '/';
+    $base_dir = __DIR__ . '/src/';
     $len = strlen($prefix);
     if (strncmp($prefix, $class, $len) !== 0) {
         return;
