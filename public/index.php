@@ -52,9 +52,7 @@ switch ($action) {
             $result = $locationController->getWeatherForecast($forecastId);
             $forecast = $result['forecast'];
             $selectedLocation = $locationController->getLocationById($forecastId);
-            if ($result['error']) {
-                $message = $result['error'];
-            }
+            $message = $result['error'] ?? '';
         }
         break;
 

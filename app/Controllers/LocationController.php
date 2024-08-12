@@ -67,17 +67,12 @@ class LocationController
     public function getWeatherForecast(int $id): array
     {
         $forecast = $this->weatherService->getWeatherForecastByLocationId($id);
-        $error = null;
 
         if ($forecast === null) {
             error_log("Failed to retrieve forecast for location ID: $id");
-            $error = "Unable to retrieve forecast. Please check the error logs for more details.";
         }
 
-        return [
-            'forecast' => $forecast,
-            'error' => $error
-        ];
+        return ['forecast' => $forecast];
     }
 
     /**
